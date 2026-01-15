@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Internal IZI - Validasi PMK 114/2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        izigreen: '#00A651',
+                        izidark: '#008542',
+                        izilight: '#e6f6ee',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f4; }
+        ::-webkit-scrollbar-thumb { background: #00A651; border-radius: 10px; }
+        .chart-container { position: relative; width: 100%; height: 300px; margin: 0 auto; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-item.active { background-color: #00A651; color: white; border-left: 4px solid #f97316; }
+    </style>
+    <!-- Chosen Palette: IZI Brand Colors (#00A651) -->
+    <!-- Application Structure Plan: 
+         1. Isu & Konteks: Berita riil mengenai rilis PMK 114/2025 dan dampaknya pada zakat.
+         2. Bedah Pasal: Detail pasal 4, 8, dan 18 yang krusial bagi OPZ.
+         3. Simulasi Pajak: Kalkulator untuk membantu tim fundraising.
+         4. Strategi: Matriks kepatuhan berdasarkan standar pelaporan baru.
+    -->
+    <!-- Visualization & Content Choices: 
+         - News Feed UI dengan sumber referensi berita pajak riil.
+         - Grid Cards untuk penjelasan pasal hukum.
+         - Chart.js untuk visualisasi pajak terutang.
+         - NO SVG / NO Mermaid.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-stone-50 text-slate-800 font-sans antialiased h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-72 bg-white border-r border-stone-200 hidden md:flex flex-col z-10 shadow-sm">
+        <div class="p-6 border-b border-stone-100 flex items-center gap-3">
+            <div class="w-10 h-10 bg-izigreen rounded-lg flex items-center justify-center text-white font-black text-xl">I</div>
+            <div>
+                <h1 class="font-bold text-sm text-izidark uppercase tracking-tighter">Portal Internal IZI</h1>
+                <p class="text-[10px] text-stone-400 font-medium tracking-widest">UPDATE PMK 114/2025</p>
+            </div>
+        </div>
+        
+        <nav class="flex-1 py-4 px-3">
+            <ul class="space-y-1">
+                <li>
+                    <button onclick="navigateTo('news')" class="nav-item active w-full text-left px-4 py-3 text-sm font-semibold text-stone-600 rounded-lg hover:bg-izilight transition-all flex items-center gap-3">
+                        <span>&#128240;</span> Berita & Konteks Riil
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('rules')" class="nav-item w-full text-left px-4 py-3 text-sm font-semibold text-stone-600 rounded-lg hover:bg-izilight transition-all flex items-center gap-3">
+                        <span>&#9878;</span> Bedah Pasal PMK 114
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('calc')" class="nav-item w-full text-left px-4 py-3 text-sm font-semibold text-stone-600 rounded-lg hover:bg-izilight transition-all flex items-center gap-3">
+                        <span>&#129521;</span> Kalkulator Pajak IZI
+                    </button>
+                </li>
+                <li>
+                    <button onclick="navigateTo('strategy')" class="nav-item w-full text-left px-4 py-3 text-sm font-semibold text-stone-600 rounded-lg hover:bg-izilight transition-all flex items-center gap-3">
+                        <span>&#128203;</span> Matriks Kepatuhan
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-6 border-t border-stone-100 bg-stone-50/50">
+            <p class="text-[9px] text-stone-400 font-bold uppercase mb-2">Referensi Hukum</p>
+            <p class="text-[10px] text-stone-500 italic">Ditetapkan: 30 Des 2025<br>Berlaku: 31 Des 2025</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-stone-50 p-6 md:p-10" id="main-view">
+        <!-- Content will be injected here -->
+    </main>
+
+    <script>
+        const newsUpdates = [
+            {
+                tag: "RILIS RESMI",
+                date: "Januari 2026",
+                title: "Kemenkeu Rilis PMK 114/2025: Zakat Tetap Jadi Pengurang Pajak",
+                desc: "Pemerintah menegaskan zakat 2,5% tetap dapat diperhitungkan dalam PPh sepanjang melalui BAZNAS atau LAZ resmi. Aturan ini mencabut PMK 254/2010 untuk memberikan kepastian hukum lebih tinggi.",
+                source: "DDTC News / Republika"
+            },
+            {
+                tag: "PERUBAHAN TEKNIS",
+                date: "Desember 2025",
+                title: "Standardisasi Bukti Penerimaan Sumbangan & Zakat",
+                desc: "PMK 114/2025 mewajibkan adanya nomor bukti penerimaan yang valid dan identitas lengkap (Nama & NPWP/NIK) pada BSZ agar sah secara fiskal di sistem DJP.",
+                source: "Ortax Data Center"
+            },
+            {
+                tag: "BATASAN BARU",
+                date: "Januari 2026",
+                title: "Pemberian Zakat Tidak Boleh Menyebabkan Rugi Fiskal",
+                desc: "Pasal 8 ayat (3) mengatur bahwa pengurangan zakat dibatasi agar tidak menimbulkan kerugian fiskal pada tahun pajak berjalan. Jika berpotensi rugi, pengurangan dibatasi hingga titik impas.",
+                source: "Analisis PMK 114/2025"
+            }
+        ];
+
+        const ruleDetails = [
+            { pasal: "Pasal 4", title: "Batas 5% Non-Zakat", detail: "Sumbangan fasilitas pendidikan atau olahraga dibatasi maksimal 5% dari penghasilan neto fiskal tahun sebelumnya." },
+            { pasal: "Pasal 8", title: "Zakat Sebagai Pengurang", detail: "Menegaskan zakat atau sumbangan keagamaan wajib dapat dikurangkan dari penghasilan bruto muzakki." },
+            { pasal: "Pasal 13", title: "Syarat Kelembagaan", detail: "Lembaga penerima (seperti IZI) wajib disahkan pemerintah dan memiliki NPWP yang aktif untuk menerbitkan BSZ yang sah." },
+            { pasal: "Pasal 18", title: "Elemen Bukti Sah", detail: "Bukti pembayaran sah minimal memuat: Nama, NPWP/NIK, Jumlah, Tanggal, dan Validasi lembaga penerima." }
+        ];
+
+        function navigateTo(viewId) {
+            const main = document.getElementById('main-view');
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`button[onclick="navigateTo('${viewId}')"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            main.innerHTML = '';
+            main.className = 'flex-1 overflow-y-auto bg-stone-50 p-6 md:p-10 fade-in';
+
+            if (viewId === 'news') renderNews(main);
+            if (viewId === 'rules') renderRules(main);
+            if (viewId === 'calc') renderCalc(main);
+            if (viewId === 'strategy') renderStrategy(main);
+        }
+
+        function renderNews(container) {
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto space-y-8">
+                    <header class="border-b border-stone-200 pb-6">
+                        <h2 class="text-3xl font-black text-slate-800 tracking-tight">Isu Terkini & Konteks Regulasi</h2>
+                        <p class="text-stone-500 mt-2 italic font-medium">Referensi: Peraturan Menteri Keuangan (PMK) No. 114 Tahun 2025</p>
+                    </header>
+
+                    <div class="grid grid-cols-1 gap-5">
+                        ${newsUpdates.map(item => `
+                            <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-izigreen transition-all">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="px-2 py-0.5 rounded bg-izilight text-izidark text-[10px] font-black uppercase tracking-wider">${item.tag}</span>
+                                    <span class="text-[11px] text-stone-400">${item.date}</span>
+                                </div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-2 leading-tight">${item.title}</h4>
+                                <p class="text-stone-600 text-sm leading-relaxed mb-4">${item.desc}</p>
+                                <div class="text-[10px] font-bold text-stone-400 flex items-center gap-2">
+                                    <span class="w-1 h-3 bg-izigreen"></span> SUMBER: ${item.source}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRules(container) {
+            container.innerHTML = `
+                <div class="max-w-5xl mx-auto space-y-8">
+                    <header>
+                        <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Analisis Teknis Pasal PMK 114</h2>
+                        <p class="text-stone-500">Poin-poin hukum yang wajib dipahami oleh operasional IZI.</p>
+                    </header>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${ruleDetails.map(r => `
+                            <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm flex gap-4">
+                                <div class="w-12 h-12 bg-izilight rounded-lg flex-shrink-0 flex items-center justify-center font-black text-izigreen text-xs">
+                                    ${r.pasal}
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 mb-1">${r.title}</h4>
+                                    <p class="text-xs text-stone-600 leading-relaxed">${r.detail}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="bg-izidark text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
+                        <p class="text-xs opacity-70 font-bold uppercase mb-2">Status Audit</p>
+                        <p class="text-lg font-bold leading-tight">IZI wajib menyelaraskan format BSZ sesuai Lampiran A PMK 114/2025.</p>
+                        <div class="absolute -right-5 -top-5 text-8xl opacity-10 font-black">!</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCalc(container) {
+            container.innerHTML = `
+                <div class="max-w-5xl mx-auto space-y-8">
+                    <header>
+                        <h2 class="text-2xl font-black text-slate-800">Alat Bantu Simulasi Pajak Muzakki</h2>
+                        <p class="text-stone-500">Estimasi berdasarkan tarif efektif PPh Pasal 21 dan skema pengurang zakat PMK 114.</p>
+                    </header>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div class="lg:col-span-5 bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Penghasilan Tahunan (Neto)</label>
+                                    <input type="number" id="incInp" value="500000000" class="w-full bg-stone-50 p-4 rounded-xl border-none focus:ring-2 focus:ring-izigreen outline-none text-xl font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Rencana Zakat (2,5%)</label>
+                                    <input type="number" id="zakInp" value="12500000" class="w-full bg-stone-50 p-4 rounded-xl border-none focus:ring-2 focus:ring-izigreen outline-none text-xl font-bold">
+                                </div>
+                                <button onclick="calculate()" class="w-full bg-izigreen text-white font-black py-4 rounded-xl hover:bg-izidark shadow-lg">Hitung Efisiensi</button>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-7 space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm">
+                                    <p class="text-[10px] font-bold text-stone-400 uppercase mb-1">Pajak Tanpa Zakat</p>
+                                    <p class="text-lg font-black text-stone-700" id="vOld">Rp 0</p>
+                                </div>
+                                <div class="bg-izilight p-5 rounded-2xl border border-izigreen/20 shadow-sm">
+                                    <p class="text-[10px] font-bold text-izidark uppercase mb-1">Pajak Setelah Zakat</p>
+                                    <p class="text-lg font-black text-izigreen" id="vNew">Rp 0</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-stone-100">
+                                <div class="chart-container"><canvas id="pajakChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            setTimeout(calculate, 100);
+        }
+
+        let chart = null;
+        function calculate() {
+            const inc = parseFloat(document.getElementById('incInp').value) || 0;
+            const zak = parseFloat(document.getElementById('zakInp').value) || 0;
+            const rate = 0.25; 
+
+            const tax1 = inc * rate;
+            const tax2 = (inc - zak) * rate;
+
+            document.getElementById('vOld').innerText = 'Rp ' + tax1.toLocaleString('id-ID');
+            document.getElementById('vNew').innerText = 'Rp ' + tax2.toLocaleString('id-ID');
+
+            const ctx = document.getElementById('pajakChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Tanpa Zakat', 'Dengan Zakat IZI'],
+                    datasets: [{
+                        data: [tax1, tax2],
+                        backgroundColor: ['#e5e5e5', '#00A651'],
+                        borderRadius: 10,
+                        barThickness: 50
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { display: false }, x: { grid: { display: false } } }
+                }
+            });
+        }
+
+        function renderStrategy(container) {
+            container.innerHTML = `
+                <div class="max-w-5xl mx-auto space-y-8">
+                    <header>
+                        <h2 class="text-2xl font-black text-slate-800">Matriks Kepatuhan IZI 2026</h2>
+                        <p class="text-stone-500">Langkah mitigasi risiko berdasarkan kewajiban baru PMK 114/2025.</p>
+                    </header>
+
+                    <div class="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-stone-50 font-black text-stone-400 uppercase tracking-widest border-b border-stone-100">
+                                <tr>
+                                    <th class="p-5">Risiko Utama</th>
+                                    <th class="p-5">Kewajiban PMK 114</th>
+                                    <th class="p-5">Tindakan IZI</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-stone-100">
+                                <tr>
+                                    <td class="p-5 font-bold">NIK/NPWP Tidak Valid</td>
+                                    <td class="p-5 text-stone-600">Syarat sah bukti pembayaran (Pasal 18)</td>
+                                    <td class="p-5"><span class="bg-red-50 text-red-700 px-2 py-1 rounded font-bold">Wajibkan NIK di Form Donasi</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-5 font-bold">Format Bukti Manual</td>
+                                    <td class="p-5 text-stone-600">Standardisasi bukti sumbangan</td>
+                                    <td class="p-5"><span class="bg-amber-50 text-amber-700 px-2 py-1 rounded font-bold">Digitalkan BSZ (QR Code)</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-5 font-bold">Laporan Terlambat</td>
+                                    <td class="p-5 text-stone-600">Pelaporan berkala penerimaan (Pasal 19)</td>
+                                    <td class="p-5"><span class="bg-izilight text-izidark px-2 py-1 rounded font-bold">Dashboard Integrasi Kemenkeu</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                        <div class="p-6 bg-white rounded-2xl border border-stone-200 shadow-sm">
+                            <h4 class="font-bold text-slate-800 mb-2">Tujuan Utama (Pasal Menimbang a)</h4>
+                            <p class="text-xs text-stone-500 leading-relaxed italic">"Memberikan kepastian hukum dan kemudahan administrasi atas sumbangan dan zakat, baik dari sisi pemberi maupun penerima."</p>
+                        </div>
+                        <div class="p-6 bg-white rounded-2xl border border-stone-200 shadow-sm">
+                            <h4 class="font-bold text-slate-800 mb-2">Status Peraturan Lama</h4>
+                            <p class="text-xs text-stone-500 leading-relaxed">PMK 245/2008, PMK 254/2010, PMK 76/2011, dan PMK 90/2020 resmi dicabut dan digantikan sepenuhnya oleh PMK 114/2025.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => navigateTo('news'));
+    </script>
+</body>
+</html>
